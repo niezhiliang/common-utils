@@ -128,9 +128,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:https://github.com/niezhiliang/common-utils.git</connection>
+        <connection>scm:git://https://github.com/niezhiliang/common-utils.git</connection>
         <developerConnection>scm:git:https://github.com/niezhiliang/common-utils.git</developerConnection>
-        <url>https://github.com/niezhiliang</url>
+        <url>https://github.com/niezhiliang/common-utils</url>
         <tag>v${project.version}</tag>
     </scm>
 
