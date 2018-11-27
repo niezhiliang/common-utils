@@ -11,6 +11,7 @@
     <groupId>com.niezhiliang.common.utils</groupId>
     <artifactId>common-utils</artifactId>
     <version>v1.0.0</version>
+    <packaging>pom</packaging>
 
     <dependencies>
         <dependency>
@@ -22,12 +23,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <version>2.0.1.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
