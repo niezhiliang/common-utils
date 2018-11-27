@@ -15,7 +15,7 @@
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
             <version>2.0.1.RELEASE</version>
         </dependency>
         <dependency>
@@ -28,6 +28,16 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.33</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>4.5.6</version>
         </dependency>
     </dependencies>
 
@@ -118,8 +128,8 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:https://https://github.com/niezhiliang/alioss.git</connection>
-        <developerConnection>scm:git:https://github.com/niezhiliang/alioss.git</developerConnection>
+        <connection>scm:git:https://github.com/niezhiliang/common-utils.git</connection>
+        <developerConnection>scm:git:https://github.com/niezhiliang/common-utils.git</developerConnection>
         <url>https://github.com/niezhiliang</url>
         <tag>v${project.version}</tag>
     </scm>
