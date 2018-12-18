@@ -7,6 +7,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Base64;
 
@@ -152,6 +155,9 @@ public class FileUtils {
     }
 
     public static void main(String[] args) {
+        String fileUrl = "http://book-store.oss-cn-beijing.aliyuncs.com/default.jpg";
+        String suffic = fileUrl.substring(fileUrl.lastIndexOf("/")+1);
+        System.out.println(suffic);
         System.out.println(getFileName(new File("/Users/suyu/Desktop/各种账号.txt")));
     }
 
@@ -206,17 +212,45 @@ public class FileUtils {
      */
     public static void downLoadFile(HttpServletResponse response,File file) throws IOException {
             byte[] data = loadFile(file);
-            String fileName = FileUtils.generateFileNameByTime("pdf");
-            fileName = fileName.substring(0,fileName.indexOf("."));
-            fileName = new String(fileName.getBytes(Charset.forName("UTF-8")), "ISO-8859-1");
             response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=" + getFileSuffixName(file));
-            response.setContentType("application/pdf");
+            response.setHeader("Content-disposition", "attachment; filename=" + getFileName(file));
+            response.setContentType("multipart/form-data");
             response.setCharacterEncoding("UTF-8");
             ServletOutputStream out = response.getOutputStream();
             out.write(data);
             out.flush();
             out.close();
+    }
+
+    /**
+     * 通过url下载文件
+     * @param response
+     * @param fileUrl
+     */
+    public static void downLoadFileByUrl(HttpServletResponse response,String fileUrl) throws Exception {
+            String fileName = fileUrl.substring(fileUrl.lastIndexOf("/")+1);
+            URL url = new URL(fileUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            // 设置超时间为3秒
+            conn.setConnectTimeout(3 * 1000);
+            // 防止屏蔽程序抓取而返回403错误
+            conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
+
+            // 得到输入流
+            InputStream inputStream = conn.getInputStream();
+            // 获取自己数组
+            byte[] data = InputStream2Byte(inputStream);
+            response.reset();
+            response.setHeader("Content-disposition", "attachment; filename=" + fileName);
+            response.setContentType("multipart/form-data");
+            response.setCharacterEncoding("UTF-8");
+            ServletOutputStream out = response.getOutputStream();
+            out.write(data);
+            out.flush();
+            out.close();
+            if (inputStream != null) {
+                inputStream.close();
+            }
     }
 
     /**
@@ -236,6 +270,22 @@ public class FileUtils {
      */
     public static void MultipartFile2File(MultipartFile multipartFile,File file) throws IOException {
         multipartFile.transferTo(file);
+    }
+
+    /**
+     * inputStream转byte[]
+     * @param inputStream
+     * @return
+     */
+    public static byte[] InputStream2Byte(InputStream inputStream) throws IOException {
+        byte[] buffer = new byte[1024];
+        int len = 0;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        while ((len = inputStream.read(buffer)) != -1) {
+            bos.write(buffer, 0, len);
+        }
+        bos.close();
+        return bos.toByteArray();
     }
 
 }

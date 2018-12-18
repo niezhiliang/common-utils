@@ -12,7 +12,7 @@
 
     <groupId>com.niezhiliang.common.utils</groupId>
     <artifactId>common-utils</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <name>common-utils</name>
     <url>http://maven.apache.org</url>
