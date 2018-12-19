@@ -21,6 +21,81 @@ import java.util.Base64;
 public class FileUtils {
 
     /**
+     * 获取文件后缀
+     * @param file
+     * @return
+     */
+    public static String getFileSuffixName(MultipartFile file) {
+        String fileName = getFileName(file);
+        return fileName.substring(fileName.lastIndexOf("."));
+    }
+
+    /**
+     * 返回文件名带后缀
+     * @param file
+     * @return
+     */
+    public static String getFileName(MultipartFile file) {
+        return file.getOriginalFilename();
+    }
+
+
+    /**
+     * 返回文件名带后缀
+     * @param file
+     * @return
+     */
+    public static String getFileName(File file) {
+        return file.getName();
+    }
+
+    /**
+     * 获取文件后缀
+     * @param file
+     * @return
+     */
+    public static String getFileSuffixName(File file) {
+        String fileName = getFileName(file);
+        return fileName.substring(fileName.lastIndexOf("."));
+    }
+
+    /**
+     * 传入后缀名 生成不重复文件名(时间戳格式)
+     * @param suffix
+     * @return
+     */
+    public static String generateFileNameByTime(String suffix) {
+        StringBuffer fileName = new StringBuffer();
+        fileName.append(System.currentTimeMillis())
+                .append(CodeUtils.getNumCode4());
+        if (suffix.indexOf(".") != -1) {
+            fileName.append(suffix);
+        } else {
+            fileName.append(".")
+                    .append(suffix);
+        }
+        return fileName.toString();
+    }
+
+    /**
+     * 传入后缀名 生成不重复文件名(时间戳格式)
+     * @param suffix
+     * @return
+     */
+    public static String generateFileNameByUUID(String suffix) {
+        StringBuffer fileName = new StringBuffer();
+        fileName.append(UuidUtils.getUUIDNoSlash());
+        if (suffix.indexOf(".") != -1) {
+            fileName.append(suffix);
+        } else {
+            fileName.append(".")
+                    .append(suffix);
+        }
+        return fileName.toString();
+    }
+
+
+    /**
      * 删除文件或清空文件夹并删除
      * @param path
      */
@@ -80,7 +155,13 @@ public class FileUtils {
         return base64;
     }
 
-    public static void saveBase64File(String base64Content, String savepath) throws IOException {
+    /**
+     * base64转文件
+     * @param base64Content
+     * @param savepath
+     * @throws IOException
+     */
+    public static void Base64ToFile(String base64Content, String savepath) throws IOException {
         new File(savepath);
         FileOutputStream fos = new FileOutputStream(savepath);
 
@@ -96,7 +177,7 @@ public class FileUtils {
     }
 
     /**
-     * 文件转byte
+     * 文件转byte[]
      * @param file
      * @return
      * @throws IOException
@@ -125,132 +206,25 @@ public class FileUtils {
     }
 
     /**
-     * 获取文件后缀
-     * @param file
-     * @return
-     */
-    public static String getFileSuffixName(MultipartFile file) {
-        String fileName = getFileName(file);
-        return fileName.substring(fileName.lastIndexOf("."));
-    }
-
-
-    /**
-     * 返回文件名带后缀
-     * @param file
-     * @return
-     */
-    public static String getFileName(File file) {
-        return file.getName();
-    }
-
-    /**
-     * 获取文件后缀
-     * @param file
-     * @return
-     */
-    public static String getFileSuffixName(File file) {
-        String fileName = getFileName(file);
-        return fileName.substring(fileName.lastIndexOf("."));
-    }
-
-    public static void main(String[] args) {
-        String fileUrl = "http://book-store.oss-cn-beijing.aliyuncs.com/default.jpg";
-        String suffic = fileUrl.substring(fileUrl.lastIndexOf("/")+1);
-        System.out.println(suffic);
-        System.out.println(getFileName(new File("/Users/suyu/Desktop/各种账号.txt")));
-    }
-
-    /**
-     * 返回文件名带后缀
-     * @param file
-     * @return
-     */
-    public static String getFileName(MultipartFile file) {
-        return file.getOriginalFilename();
-    }
-
-    /**
-     * 传入后缀名 生成不重复文件名(时间戳格式)
-     * @param suffix
-     * @return
-     */
-    public static String generateFileNameByTime(String suffix) {
-        StringBuffer fileName = new StringBuffer();
-        fileName.append(System.currentTimeMillis())
-                .append(CodeUtils.getNumCode4());
-        if (suffix.indexOf(".") != -1) {
-            fileName.append(suffix);
-        } else {
-            fileName.append(".")
-                    .append(suffix);
-        }
-        return fileName.toString();
-    }
-
-    /**
-     * 传入后缀名 生成不重复文件名(时间戳格式)
-     * @param suffix
-     * @return
-     */
-    public static String generateFileNameByUUID(String suffix) {
-        StringBuffer fileName = new StringBuffer();
-        fileName.append(UuidUtils.getUUIDNoSlash());
-        if (suffix.indexOf(".") != -1) {
-            fileName.append(suffix);
-        } else {
-            fileName.append(".")
-                    .append(suffix);
-        }
-        return fileName.toString();
-    }
-
-    /**
-     * 文件下载
-     * @param response
+     * byte[]转本地文件
+     * @param buf
+     * @param path
      * @throws IOException
      */
-    public static void downLoadFile(HttpServletResponse response,File file) throws IOException {
-            byte[] data = loadFile(file);
-            response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=" + getFileName(file));
-            response.setContentType("multipart/form-data");
-            response.setCharacterEncoding("UTF-8");
-            ServletOutputStream out = response.getOutputStream();
-            out.write(data);
-            out.flush();
-            out.close();
-    }
+    private static void byte2File(byte[] buf, String path) throws IOException {
 
-    /**
-     * 通过url下载文件
-     * @param response
-     * @param fileUrl
-     */
-    public static void downLoadFileByUrl(HttpServletResponse response,String fileUrl) throws Exception {
-            String fileName = fileUrl.substring(fileUrl.lastIndexOf("/")+1);
-            URL url = new URL(fileUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            // 设置超时间为3秒
-            conn.setConnectTimeout(3 * 1000);
-            // 防止屏蔽程序抓取而返回403错误
-            conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
+        File file = new File(path);
+        FileOutputStream fos = new FileOutputStream(file);
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
 
-            // 得到输入流
-            InputStream inputStream = conn.getInputStream();
-            // 获取自己数组
-            byte[] data = InputStream2Byte(inputStream);
-            response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=" + fileName);
-            response.setContentType("multipart/form-data");
-            response.setCharacterEncoding("UTF-8");
-            ServletOutputStream out = response.getOutputStream();
-            out.write(data);
-            out.flush();
-            out.close();
-            if (inputStream != null) {
-                inputStream.close();
-            }
+        //1.如果父目录不存在，则创建
+        File dir = file.getParentFile();
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        //2.写byte数组到文件
+        bos.write(buf);
     }
 
     /**
@@ -286,6 +260,55 @@ public class FileUtils {
         }
         bos.close();
         return bos.toByteArray();
+    }
+
+
+    /**
+     * 文件下载
+     * @param response
+     * @throws IOException
+     */
+    public static void downLoadFile(HttpServletResponse response,File file) throws IOException {
+        byte[] data = loadFile(file);
+        response.reset();
+        response.setHeader("Content-disposition", "attachment; filename=" + getFileName(file));
+        response.setContentType("multipart/form-data");
+        response.setCharacterEncoding("UTF-8");
+        ServletOutputStream out = response.getOutputStream();
+        out.write(data);
+        out.flush();
+        out.close();
+    }
+
+    /**
+     * 通过url下载文件
+     * @param response
+     * @param fileUrl
+     */
+    public static void downLoadFileByUrl(HttpServletResponse response,String fileUrl) throws Exception {
+        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/")+1);
+        URL url = new URL(fileUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        // 设置超时间为3秒
+        conn.setConnectTimeout(3 * 1000);
+        // 防止屏蔽程序抓取而返回403错误
+        conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
+
+        // 得到输入流
+        InputStream inputStream = conn.getInputStream();
+        // 获取自己数组
+        byte[] data = InputStream2Byte(inputStream);
+        response.reset();
+        response.setHeader("Content-disposition", "attachment; filename=" + fileName);
+        response.setContentType("multipart/form-data");
+        response.setCharacterEncoding("UTF-8");
+        ServletOutputStream out = response.getOutputStream();
+        out.write(data);
+        out.flush();
+        out.close();
+        if (inputStream != null) {
+            inputStream.close();
+        }
     }
 
 }
